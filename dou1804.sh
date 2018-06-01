@@ -52,6 +52,9 @@ chmod 700 /home/bw/.ssh
 cp /root/git/sshd_config /etc/ssh/sshd_config
 cp /root/git/jail.local /etc/fail2ban/jail.local
 cp /root/git/bw /etc/sudoers.d/bw
+cp /root/git/ssh_banner.sh /etc/ssh_banner.sh
+chmod +x /etc/ssh_banner.sh
+echo "/etc/ssh_banner.sh" >> /etc/profile
 sed -i 's/HISTSIZE=1000/HISTSIZE=200000/' /home/bw/.bashrc
 sed -i 's/HISTSIZE=1000/HISTSIZE=200000/' /root/.bashrc
 #The following is specific to the digitalocean ubuntu virtual machines
