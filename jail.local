@@ -1,0 +1,293 @@
+[INCLUDES]
+before = paths-debian.conf
+[DEFAULT]
+ignoreip = 127.0.0.1/8 96.68.80.40/29
+ignorecommand =
+bantime  = 600
+findtime  = 600
+maxretry = 5
+backend = auto
+usedns = warn
+logencoding = auto
+enabled = false
+filter = %(__name__)s
+destemail = root@localhost
+sender = root@localhost
+mta = sendmail
+protocol = tcp
+chain = INPUT
+port = 0:65535
+banaction = iptables-multiport
+action_ = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+action_mw = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+            %(mta)s-whois[name=%(__name__)s, dest="%(destemail)s", protocol="%(protocol)s", chain="%(chain)s"]
+action_mwl = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+             %(mta)s-whois-lines[name=%(__name__)s, dest="%(destemail)s", logpath=%(logpath)s, chain="%(chain)s"]
+action_xarf = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+             xarf-login-attack[service=%(__name__)s, sender="%(sender)s", logpath=%(logpath)s, port="%(port)s"]
+action_cf_mwl = cloudflare[cfuser="%(cfemail)s", cftoken="%(cfapikey)s"]
+                %(mta)s-whois-lines[name=%(__name__)s, dest="%(destemail)s", logpath=%(logpath)s, chain="%(chain)s"]
+action_blocklist_de  = blocklist_de[email="%(sender)s", service=%(filter)s, apikey="%(blocklist_de_apikey)s"]
+action_badips = badips.py[category="%(name)s", banaction="%(banaction)s"]
+action = %(action_)s
+[sshd]
+port    = ssh
+logpath = %(sshd_log)s
+[sshd-ddos]
+port    = ssh
+logpath = %(sshd_log)s
+[dropbear]
+port     = ssh
+logpath  = %(dropbear_log)s
+[selinux-ssh]
+port     = ssh
+logpath  = %(auditd_log)s
+maxretry = 5
+[apache-auth]
+port     = http,https
+logpath  = %(apache_error_log)s
+[apache-badbots]
+port     = http,https
+logpath  = %(apache_access_log)s
+bantime  = 172800
+maxretry = 1
+[apache-noscript]
+port     = http,https
+logpath  = %(apache_error_log)s
+maxretry = 6
+[apache-overflows]
+port     = http,https
+logpath  = %(apache_error_log)s
+maxretry = 2
+[apache-nohome]
+port     = http,https
+logpath  = %(apache_error_log)s
+maxretry = 2
+[apache-botsearch]
+port     = http,https
+logpath  = %(apache_error_log)s
+maxretry = 2
+[apache-fakegooglebot]
+port     = http,https
+logpath  = %(apache_access_log)s
+maxretry = 1
+ignorecommand = %(ignorecommands_dir)s/apache-fakegooglebot <ip>
+[apache-modsecurity]
+port     = http,https
+logpath  = %(apache_error_log)s
+maxretry = 2
+[apache-shellshock]
+port    = http,https
+logpath = %(apache_error_log)s
+maxretry = 1
+[nginx-http-auth]
+port    = http,https
+logpath = %(nginx_error_log)s
+[nginx-botsearch]
+port     = http,https
+logpath  = %(nginx_error_log)s
+maxretry = 2
+[php-url-fopen]
+port    = http,https
+logpath = %(nginx_access_log)s
+          %(apache_access_log)s
+[suhosin]
+port    = http,https
+logpath = %(suhosin_log)s
+[lighttpd-auth]
+port    = http,https
+logpath = %(lighttpd_error_log)s
+[roundcube-auth]
+port     = http,https
+logpath  = logpath = %(roundcube_errors_log)s
+[openwebmail]
+port     = http,https
+logpath  = /var/log/openwebmail.log
+[horde]
+port     = http,https
+logpath  = /var/log/horde/horde.log
+[groupoffice]
+port     = http,https
+logpath  = /home/groupoffice/log/info.log
+[sogo-auth]
+port     = http,https
+logpath  = /var/log/sogo/sogo.log
+[tine20]
+logpath  = /var/log/tine20/tine20.log
+port     = http,https
+maxretry = 5
+[drupal-auth]
+port     = http,https
+logpath  = %(syslog_daemon)s
+[guacamole]
+port     = http,https
+logpath  = /var/log/tomcat*/catalina.out
+[monit]
+filter   = monit
+port = 2812
+logpath  = /var/log/monit
+[webmin-auth]
+port    = 10000
+logpath = %(syslog_authpriv)s
+[froxlor-auth]
+port    = http,https
+logpath  = %(syslog_authpriv)s
+[squid]
+port     =  80,443,3128,8080
+logpath = /var/log/squid/access.log
+[3proxy]
+port    = 3128
+logpath = /var/log/3proxy.log
+[proftpd]
+port     = ftp,ftp-data,ftps,ftps-data
+logpath  = %(proftpd_log)s
+[pure-ftpd]
+port     = ftp,ftp-data,ftps,ftps-data
+logpath  = %(pureftpd_log)s
+maxretry = 6
+[gssftpd]
+port     = ftp,ftp-data,ftps,ftps-data
+logpath  = %(syslog_daemon)s
+maxretry = 6
+[wuftpd]
+port     = ftp,ftp-data,ftps,ftps-data
+logpath  = %(wuftpd_log)s
+maxretry = 6
+[vsftpd]
+port     = ftp,ftp-data,ftps,ftps-data
+logpath  = %(vsftpd_log)s
+[assp]
+port     = smtp,465,submission
+logpath  = /root/path/to/assp/logs/maillog.txt
+[courier-smtp]
+port     = smtp,465,submission
+logpath  = %(syslog_mail)s
+[postfix]
+port     = smtp,465,submission
+logpath  = %(postfix_log)s
+[postfix-rbl]
+port     = smtp,465,submission
+logpath  = %(syslog_mail)s
+maxretry = 1
+[sendmail-auth]
+port    = submission,465,smtp
+logpath = %(syslog_mail)s
+[sendmail-reject]
+port     = smtp,465,submission
+logpath  = %(syslog_mail)s
+[qmail-rbl]
+filter  = qmail
+port    = smtp,465,submission
+logpath = /service/qmail/log/main/current
+[dovecot]
+port    = pop3,pop3s,imap,imaps,submission,465,sieve
+logpath = %(dovecot_log)s
+[sieve]
+port   = smtp,465,submission
+logpath = %(dovecot_log)s
+[solid-pop3d]
+port    = pop3,pop3s
+logpath = %(solidpop3d_log)s
+[exim]
+port   = smtp,465,submission
+logpath = %(exim_main_log)s
+[exim-spam]
+port   = smtp,465,submission
+logpath = %(exim_main_log)s
+[kerio]
+port    = imap,smtp,imaps,465
+logpath = /opt/kerio/mailserver/store/logs/security.log
+[courier-auth]
+port     = smtp,465,submission,imap3,imaps,pop3,pop3s
+logpath  = %(syslog_mail)s
+[postfix-sasl]
+port     = smtp,465,submission,imap3,imaps,pop3,pop3s
+logpath  = %(postfix_log)s
+[perdition]
+port   = imap3,imaps,pop3,pop3s
+logpath = %(syslog_mail)s
+[squirrelmail]
+port = smtp,465,submission,imap2,imap3,imaps,pop3,pop3s,http,https,socks
+logpath = /var/lib/squirrelmail/prefs/squirrelmail_access_log
+[cyrus-imap]
+port   = imap3,imaps
+logpath = %(syslog_mail)s
+[uwimap-auth]
+port   = imap3,imaps
+logpath = %(syslog_mail)s
+[named-refused]
+port     = domain,953
+logpath  = /var/log/named/security.log
+[nsd]
+port     = 53
+action   = %(banaction)s[name=%(__name__)s-tcp, port="%(port)s", protocol="tcp", chain="%(chain)s", actname=%(banaction)s-tcp]
+           %(banaction)s[name=%(__name__)s-udp, port="%(port)s", protocol="udp", chain="%(chain)s", actname=%(banaction)s-udp]
+logpath = /var/log/nsd.log
+[asterisk]
+port     = 5060,5061
+action   = %(banaction)s[name=%(__name__)s-tcp, port="%(port)s", protocol="tcp", chain="%(chain)s", actname=%(banaction)s-tcp]
+           %(banaction)s[name=%(__name__)s-udp, port="%(port)s", protocol="udp", chain="%(chain)s", actname=%(banaction)s-udp]
+           %(mta)s-whois[name=%(__name__)s, dest="%(destemail)s"]
+logpath  = /var/log/asterisk/messages
+maxretry = 10
+[freeswitch]
+port     = 5060,5061
+action   = %(banaction)s[name=%(__name__)s-tcp, port="%(port)s", protocol="tcp", chain="%(chain)s", actname=%(banaction)s-tcp]
+           %(banaction)s[name=%(__name__)s-udp, port="%(port)s", protocol="udp", chain="%(chain)s", actname=%(banaction)s-udp]
+           %(mta)s-whois[name=%(__name__)s, dest="%(destemail)s"]
+logpath  = /var/log/freeswitch.log
+maxretry = 10
+[mysqld-auth]
+port     = 3306
+logpath  = %(mysql_log)s
+maxretry = 5
+[recidive]
+logpath  = /var/log/fail2ban.log
+banaction = iptables-allports
+bantime  = 604800  ; 1 week
+findtime = 86400   ; 1 day
+maxretry = 5
+[pam-generic]
+banaction = iptables-allports
+logpath  = %(syslog_authpriv)s
+[xinetd-fail]
+banaction = iptables-multiport-log
+logpath   = %(syslog_daemon)s
+maxretry  = 2
+[stunnel]
+logpath = /var/log/stunnel4/stunnel.log
+[ejabberd-auth]
+port    = 5222
+logpath = /var/log/ejabberd/ejabberd.log
+[counter-strike]
+logpath = /opt/cstrike/logs/L[0-9]*.log
+tcpport = 27030,27031,27032,27033,27034,27035,27036,27037,27038,27039
+udpport = 1200,27000,27001,27002,27003,27004,27005,27006,27007,27008,27009,27010,27011,27012,27013,27014,27015
+action  = %(banaction)s[name=%(__name__)s-tcp, port="%(tcpport)s", protocol="tcp", chain="%(chain)s", actname=%(banaction)s-tcp]
+           %(banaction)s[name=%(__name__)s-udp, port="%(udpport)s", protocol="udp", chain="%(chain)s", actname=%(banaction)s-udp]
+[nagios]
+enabled  = false
+logpath  = %(syslog_daemon)s     ; nrpe.cfg may define a different log_facility
+maxretry = 1
+[oracleims]
+enabled = false
+logpath = /opt/sun/comms/messaging64/log/mail.log_current
+maxretry = 6
+banaction = iptables-allports
+[directadmin]
+enabled = false
+logpath = /var/log/directadmin/login.log
+port = 2222
+[portsentry]
+enabled  = false
+logpath  = /var/lib/portsentry/portsentry.history
+maxretry = 1
+[pass2allow-ftp]
+port         = ftp,ftp-data,ftps,ftps-data
+filter       = apache-pass
+logpath      = %(apache_access_log)s
+blocktype    = RETURN
+returntype   = DROP
+bantime      = 3600
+maxretry     = 1
+findtime     = 1
