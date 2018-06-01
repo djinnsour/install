@@ -8,9 +8,9 @@ IPADD1=$(ip route get 1 | awk '{print $NF;exit}')
 IPADD2=$(dig +short myip.opendns.com @resolver1.opendns.com)
 
 cat << EOF
-     %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++%
-                 * * * * * * * * * * W A R N I N G * * * * * * * * * *
-     %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++%
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      * * * * * * * * * * * * * * * W A R N I N G * * * * * * * * * * * * * * * * *
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 This computer system is private property. It is for authorized use only.  If you have not been specifically authorized to login to this system and perform actions you are in violation of Texas State and United States Federal laws.  Unauthorized or improper use of this system will result in civil charges/criminal penalties. We will prosecute for all unauthorized access and improper use of this sytem.  By continuing to use this system you indicate your awareness of and consent to these terms and conditions of use. LOG OFF IMMEDIATELY if you do not agree to the conditions stated in this warning.
 
