@@ -1,0 +1,34 @@
+#!/bin/sh
+
+UPTIME_DAYS=$(expr `cat /proc/uptime | cut -d '.' -f1` % 31556926 / 86400)
+UPTIME_HOURS=$(expr `cat /proc/uptime | cut -d '.' -f1` % 31556926 % 86400 / 3600)
+UPTIME_MINUTES=$(expr `cat /proc/uptime | cut -d '.' -f1` % 31556926 % 86400 % 3600 / 60)
+HOSTNM=$(hostname -f)
+IPADD1=$(ip route get 1 | awk '{print $NF;exit}')
+IPADD2=$(dig +short myip.opendns.com @resolver1.opendns.com)
+
+cat << EOF
+     %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++%
+                 * * * * * * * * * * W A R N I N G * * * * * * * * * *
+     %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++%
+
+This computer system is private property. It is for authorized use only.  If you have not been specifically authorized to login to this system and perform actions you are in violation of Texas state and United States Federal laws.  Unauthorized or improper use of this system will result in civil charges/criminal penalties. We will prosecute for all unauthorized access and improper use of this sytem.  By continuing to use this system you indicate your awareness of and consent to these terms and conditions of use. LOG OFF IMMEDIATELY if you do not agree to the conditions stated in this warning.
+
+
+              Name: $HOSTNM
+              Uptime: $UPTIME_DAYS days, $UPTIME_HOURS hours, $UPTIME_MINUTES minutes
+
+              CPU: `cat /proc/cpuinfo | grep 'model name' | head -1 | cut -d':' -f2`
+              Memory: `free -m | head -n 2 | tail -n 1 | awk {'print $2'}`M
+              Swap: `free -m | tail -n 1 | awk {'print $2'}`M
+              Disk: `df -h / | awk '{ a = $2 } END { print a }'`
+              Distro: `lsb_release -s -d` with `uname -r`
+
+              CPU Load: `cat /proc/loadavg | awk '{print $1 ", " $2 ", " $3}'`
+              Free Memory: `free -m | head -n 2 | tail -n 1 | awk {'print $4'}`M
+              Free Swap: `free -m | tail -n 1 | awk {'print $4'}`M
+              Free Disk: `df -h / | awk '{ a = $2 } END { print a }'`
+
+              IP Address 1: $IPADD1
+              IP Address 2: $IPADD2
+EOF
